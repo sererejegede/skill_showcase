@@ -6,12 +6,15 @@ A compilation of some of my best code
 - Editting of the permissions
 
 **_pre-course-registration/_**
+
 Snippet from Educhoice
 
 **_venue-creation/_**
+
 Snippet from VenueLog
 
 **_react-native/_**
+
 Snippet from a react native app
 A mobile app that records tracks taken on journeys
 
