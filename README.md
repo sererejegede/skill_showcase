@@ -9,4 +9,4 @@ A compilation of some of my best code
 
 **_venue-creation_**
 
-(Here)[https://github.com/sererejegede/ppa] is a link to the Vue app
+[Here](https://github.com/sererejegede/ppa) is a link to the Vue app
