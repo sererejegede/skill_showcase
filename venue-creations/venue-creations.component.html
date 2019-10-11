@@ -1,0 +1,530 @@
+<!-- begin::Page loader -->
+<div class="m-page-loader m-page-loader--base m-page-loader--non-block" style="margin-left: -80px; margin-top: -20px;" *ngIf="!isPageLoading.get">
+  <div class="m-blockui">
+    <span> Please wait... </span>
+    <span> <div class="m-loader m-loader--brand"></div> </span>
+  </div>
+</div>
+<!-- End Page loader -->
+<div class="m-content">
+  <div class="progress-container mt-3">
+    <nav class="nav nav-pills nav-justified tabs mt-2">
+      <a class="flex-sm-fill text-sm-center nav-link" [ngClass]="activePage == 'stepOne' ? 'active' : ''"
+         href="javascript:void(0);" (click)="onTabClick(1, 'stepOne')">1. Venue Details
+      </a>
+      <a class="flex-sm-fill text-sm-center nav-link" [ngClass]="activePage == 'stepTwo' ? 'active' : ''"
+         href="javascript:void(0)" (click)="onTabClick(2, 'stepTwo')">2. Venue Images
+      </a>
+      <a class="flex-sm-fill text-sm-center nav-link" [ngClass]="activePage == 'stepThree' ? 'active' : ''"
+         href="javascript:void(0)" (click)="onTabClick(3, 'stepThree')">3. Venue Policies
+      </a>
+    </nav>
+  </div>
+  <div class="form-container pt-3 pb-5 mb-4">
+    <div [ngSwitch]="venueCreationSteps.step.start">
+
+      <!-- case for form one -->
+      <div *ngSwitchCase="1">
+        <div id="stepOne" class="animated m-animate-fade-in-up">
+          <div class="stepsTitle">
+            <h6 class="text-primary ">
+              Step {{ venueCreationSteps.step.start }} (<i class="flaticon-list"></i>
+              Venue Details)
+            </h6>
+          </div>
+
+          <div class="m-portlet p-4">
+            <form class="row m-form" [formGroup]="createVenueForm">
+              <div class="form-group col-md-4 m-form__group" style="padding-top: 15px;">
+                <label for="venueName">Venue Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control m-input" placeholder="Venue Name" id="venueName" formControlName="name"/>
+                <div class="form-error" *ngIf="createVenueForm.get('name')?.invalid && (createVenueForm.get('name')?.touched || createVenueForm.get('name')?.dirty)">
+                  <small *ngIf="createVenueForm.get('name')?.errors.required">
+                    Venue Name is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label for="venueLocation">Venue Location <span class="text-danger">*</span></label>
+                <input type="text" class="form-control m-input" placeholder="Venue Location e.g Ikeja"
+                       id="venueLocation" formControlName="location"/>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('location')?.invalid && (createVenueForm.get('location')?.touched || createVenueForm.get('location')?.dirty)">
+                  <small *ngIf="createVenueForm.get('location')?.errors.required">
+                    Venue Location is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label for="venueOwner">Select Location State <span class="text-danger">*</span></label>
+                <ng-select [placeholder]="'Search State'" autoCapitalize="on" formControlName="state_id">
+                  <ng-option *ngFor="let state of states$ | async" [value]="state?.id">
+                    {{ state?.name }}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('state_id')?.invalid && (createVenueForm.get('state_id')?.touched || createVenueForm.get('state_id')?.dirty)">
+                  <small *ngIf="createVenueForm.get('state_id')?.errors.required">
+                    Location State is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label for="venueAddress">Full Address <span class="text-danger">*</span></label>
+                <input type="text" class="form-control m-input" placeholder="Venue Address" id="venueAddress"
+                       formControlName="full_address"/>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('full_address')?.invalid && (createVenueForm.get('full_address')?.touched || createVenueForm.get('full_address')?.dirty)">
+                  <small *ngIf="createVenueForm.get('full_address')?.errors.required">
+                    Venue Full Address is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label for="venueCapacity">Venue Capacity <span class="text-danger">*</span></label>
+                <input type="number" class="form-control m-input" placeholder="Venue Capacity e.g 1000" id="venueCapacity" formControlName="capacity" />
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('venue_capacity')?.invalid && (createVenueForm.get('venue_capacity')?.touched || createVenueForm.get('venue_capacity')?.dirty)">
+                  <small *ngIf="createVenueForm.get('venue_capacity')?.errors.required">
+                    Venue Capacity is required
+                  </small>
+                  <small *ngIf="createVenueForm.get('venue_capacity')?.errors.pattern">
+                    Venue Capacity must be a number
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label>Venue Type <span class="text-danger">*</span></label>
+                <ng-select [multiple]="true" placeholder="Search Venue Types" clearAllText="Clear" [closeOnSelect]="false" formControlName="tags">
+                  <ng-option *ngFor="let tag of tags" [value]="tag?.name">
+                    {{tag?.name}}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error" *ngIf="createVenueForm.get('tags')?.invalid && (createVenueForm.get('tags')?.touched ||
+                  createVenueForm.get('tags')?.dirty)">
+                  <small *ngIf="createVenueForm.get('tags')?.errors.required">
+                    Select at least one Venue Type
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label>Venue Facilities <span class="text-danger">*</span></label>
+                <ng-select [multiple]="true" placeholder="Search Facilities" clearAllText="Clear" [closeOnSelect]="false" formControlName="facilities">
+                  <ng-option *ngFor="let facility of facilities" [value]="facility?.name">
+                    {{facility?.name}}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error" *ngIf="createVenueForm.get('facilities')?.invalid && (createVenueForm.get('facilities')?.touched ||  createVenueForm.get('facilities')?.dirty)">
+                  <small *ngIf="createVenueForm.get('facilities')?.errors.required">
+                    Select at least one facility
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group">
+                <label for="price">Booking Price (&#8358;) <span class="text-danger">*</span></label>
+                <input type="text" #price class="form-control m-input" placeholder="500,000" id="price"
+                       formControlName="booking_price" (keyup)="formatCurrency(price.value, 'price')" (keypress)="isNum($event)"/>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('booking_price')?.invalid && (createVenueForm.get('booking_price')?.touched || createVenueForm.get('booking_price')?.dirty)">
+                  <small *ngIf="createVenueForm.get('booking_price')?.errors.required">
+                    Booking Price is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-2 m-form__group">
+                <div class="biddable mt-1">
+                  <label for="bidable1">Is Venue Biddable?</label><br/>
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="bidable1" class="custom-control-input" (change)="isBiddable($event, createVenueForm)"
+                           value="1" formControlName="is_biddable"/>
+                    <label class="custom-control-label" for="bidable1">Yes</label>
+                  </div>
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" id="biddable2" class="custom-control-input" (change)="isBiddable($event, createVenueForm)"
+                           value="0" formControlName="is_biddable"/>
+                    <label class="custom-control-label" for="biddable2">No</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="bidControl.bool">
+                <div class="biddable mt-1">
+                  <label for="bidding_price_type">Select Bid Price Type <span class="text-danger">*</span></label>
+                  <select class="form-control" formControlName="bidding_price_type"
+                          id="bidding_price_type" (change)="bidType($event, createVenueForm)">
+                    <option value="">-Select Bid Price Type-</option>
+                    <option value="fixed">Fixed</option>
+                    <option value="ratio">Percentage</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="bidControl.bool && bidControl.type === 'fixed'">
+                <label for="biddingPriceFixed">Fixed Bid Price <span class="text-danger">*</span></label>
+                <input type="text"
+                       class="form-control m-input"
+                       #bf_price
+                       placeholder="Fixed Bid Price e.g &#8358;50,000"
+                       id="biddingPriceFixed"
+                       (keyup)="formatCurrency(bf_price.value, 'biddingPriceFixed')"
+                       (keypress)="isNum($event)"
+                       formControlName="bidding_price_type_value"/>
+                <div class="form-error" *ngIf="createVenueForm.get('bidding_price_type_value')?.invalid && (createVenueForm.get('bidding_price_type_value')?.touched || createVenueForm.get('bidding_price_type_value')?.dirty)">
+                  <small *ngIf="createVenueForm.get('bidding_price_type_value')?.errors.required">
+                   Fixed Bid Price is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="bidControl.bool && bidControl.type === 'ratio'">
+                <label for="biddingPriceRatio">
+                  Enter the percentage discount on booking price (%)
+                  <span class="text-danger">*</span>
+                </label>
+                <input type="number"
+                       class="form-control m-input"
+                       #br_price
+                       id="biddingPriceRatio"
+                       placeholder="Bid Price in Percentage e.g 50"
+                       formControlName="bidding_price_type_value"  (keypress)="isNum($event)"/>
+                <div class="form-error" *ngIf="createVenueForm.get('bidding_price_type_value')?.invalid && (createVenueForm.get('bidding_price_type_value')?.touched || createVenueForm.get('bidding_price_type_value')?.dirty)">
+                  <small *ngIf="createVenueForm.get('bidding_price_type_value')?.errors.required">
+                    Percentage Bid Price is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="role === 'ADMIN'">
+                <label for="venueOwner">Add Venue Owner <span class="text-danger">*</span></label>
+                <ng-select [placeholder]="'Search user'" [autoCapitalize]="on" (change)="getUserDetails($event)" id="venueOwner" formControlName="user_id">
+                  <ng-option *ngFor="let user of users$ | async" [value]="user?.id">
+                    {{ user?.first_name + " " + user?.last_name }}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('user_id')?.invalid && (createVenueForm.get('user_id')?.touched || createVenueForm.get('user_id')?.dirty)">
+                  <small *ngIf="createVenueForm.get('user_id')?.errors.required">
+                    Venue Owner is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="extraFields.account">
+                <button class="btn btn-sm m-btn--pill btn-dark" (click)="assignNewAccount()">
+                  <i class="la la-plus"></i>Add Account
+                </button>
+                <label for="account">Bank Details <span class="text-danger">*</span></label>
+                <ng-select [placeholder]="'Search Accounts'" [autoCapitalize]="on" id="account" formControlName="bank_account_id">
+                  <ng-option *ngFor="let bankOwner of venueOwner?.bank_accounts" [value]="bankOwner?.id">
+                    {{ bankOwner?.bank?.bank_name +' --- '+bankOwner?.account_no}}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error" *ngIf="createVenueForm.get('bank_account_id')?.invalid && (createVenueForm.get('bank_account_id')?.touched || createVenueForm.get('bank_account_id')?.dirty)">
+                  <small *ngIf="createVenueForm.get('bank_account_id')?.errors.required">
+                    Bank details is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group" *ngIf="role !== 'ADMIN'">
+                <label for="account">Bank Details <span class="text-danger">*</span>
+                  <button class="btn btn-sm m-btn--pill btn-dark" (click)="assignNewAccount()">
+                    <i class="la la-plus"></i>Add Account
+                  </button>
+                </label>
+                <ng-select [placeholder]="'Search Accounts'" [autoCapitalize]="on" id="bank_account" formControlName="bank_account_id">
+                  <ng-option *ngFor="let bankOwner of venueOwner?.bank_accounts" [value]="bankOwner?.id">
+                    {{ bankOwner?.bank?.bank_name +' --- '+bankOwner?.account_no}}
+                  </ng-option>
+                </ng-select>
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('bank_account_id')?.invalid && (createVenueForm.get('bank_account_id')?.touched || createVenueForm.get('bank_account_id')?.dirty)">
+                  <small *ngIf="createVenueForm.get('bank_account_id')?.errors.required">
+                    Bank details Price is required
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3 m-form__group">
+                <label for="phone_no">Telephone <span class="text-danger">*</span></label>
+                <input type="text" (keydown)="isNum($event)" id="phone_no" class="form-control m-input"
+                       placeholder="Telephone" minlength="11" maxlength="11" formControlName="phone_no">
+                <div class="form-error"
+                     *ngIf="createVenueForm.get('phone_no')?.invalid && (createVenueForm.get('phone_no')?.touched || createVenueForm.get('phone_no')?.dirty)">
+                  <small *ngIf="createVenueForm.get('phone_no')?.errors.required">
+                    Telephone Number is required
+                  </small>
+                  <small *ngIf="createVenueForm.get('phone_no')?.errors.minlength">
+                    Telephone Number must be 11 digits
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4 m-form__group">
+                <label for="video">Youtube Video URL <i class="la la-youtube-square"></i></label>
+                <input type="text" id="video" formControlName="video_url" class="form-control m-input" placeholder="Example https://www.youtube.com/watch?v=UDyNsnB_COA">
+              </div>
+
+              <div class="form-group col-md-5 m-form__group">
+                <label for="desc">Describe Venue <span class="text-danger">*</span></label>
+                <textarea name="" id="desc" class="form-control" rows="3" formControlName="description" placeholder="Describe your venue..."></textarea>
+                <div class="form-error" *ngIf="createVenueForm.get('description')?.invalid && (createVenueForm.get('description')?.touched || createVenueForm.get('description')?.dirty)">
+                  <small *ngIf="createVenueForm.get('description')?.errors.required">
+                    Venue description is required
+                  </small>
+                </div>
+              </div>
+            </form>
+          </div>
+          <!--<pre>{{ createVenueForm.value | json }}</pre>-->
+          <div class="clearfix float-right mt-3">
+            <!---->
+            <button type="button" class="btn btn-brand" [disabled]="createVenueForm.invalid" (click)="changeFormSteps('next')">
+              Next <i class="la la-angle-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- case for form two -->
+      <div *ngSwitchCase='2'>
+        <div id="stepTwo" class="animated m-animate-fade-in-up">
+          <div class="stepsTitle">
+            <h6 class="text-primary ">
+              Step {{ venueCreationSteps.step.start }} (<i class="la la-camera-retro"></i>
+              Venue Images)
+              <small class="text-danger">*Image dimension (700x400) or higher</small>
+            </h6>
+          </div>
+          <div class="m-portlet image-container p-4">
+
+            <input type="file" class="m--hide" (change)="handleFileChange($event)"
+                   accept="image/jpg, image/png, image/jpeg" multiple id="venue_img"/>
+            <!-- <h5>Click on the image to select another</h5> -->
+            <div class="text-center pb-4">
+              <button class="btn btn-sm btn-accent" [disabled]="images.length >= imageLimit"
+                      (click)="triggerClick('venue_img')">
+                <i class="fa fa-upload"></i> Add Image
+              </button>
+            </div>
+            <ng-container *ngIf="images.length">
+              <div class="row row-eq-height">
+                <div class="col-sm-3 mb-4" *ngFor="let img of images; let i = index">
+                  <div class="img-div-2x position-relative">
+                    <a class="btn btn-sm btn-danger m-btn--air delete-button" (click)="removeImage(i)">
+                      <i class="la la-times"></i>
+                    </a>
+                    <img class="img-thumbnail img-fluid venue-img" [src]="img?.img_url"/>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="clearfix float-right mt-3">
+            <button class="btn btn-accent mr-2" *ngIf="venueCreationSteps.step.start !== 1"
+                    (click)="changeFormSteps('back')">
+              <i class="la la-angle-left"></i> Back
+            </button>
+            <button type="button" [disabled]="" class="btn btn-brand" (click)="changeFormSteps('next')">
+              Next <i class="la la-angle-right"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- case for form three -->
+      <div *ngSwitchDefault>
+        <div id="stepThree" class="animated m-animate-fade-in-up">
+          <div class="stepsTitle">
+            <h6 class="text-primary ">
+              Step {{ venueCreationSteps.step.start }} (<i class="flaticon-file"></i>
+              Venue Policies)
+            </h6>
+          </div>
+          <div class="m-portlet policyContainer mt-3 p-4">
+
+            <form #policyForm="ngForm" id="policyAccordion">
+              <div class="card" *ngFor="let policy of venuePolicy; let i = index;">
+                <div class="card-header p-2" [attr.id]="'heading' + i" data-toggle="collapse" [attr.data-target]="'#collapse' + i" aria-expanded="true" aria-controls="collapseOne">
+                  <!--<h5 class="mb-0 policyTitle">-->
+                  <!--{{policy.policy_name}} <span>#{{i + 1}}</span>-->
+                  <!--</h5>-->
+                  <label class="m-checkbox m-checkbox--solid m-checkbox--single m-checkbox--brand float-left" *ngIf="policy?.children?.length === 0">
+                    <input type="checkbox" [checked]="policySelected" (change)="selectPolicy(policy, $event)">
+                    <span></span>
+                  </label>
+                  <h6 class="float-left policyTitle" style="margin-bottom: 0">{{policy?.policy_name}} <span>#{{i + 1}}</span></h6>
+                </div>
+
+                <div *ngIf="policy?.children?.length === 0; else sub_policy" [attr.id]="'collapse' + i" class="collapse" [class.show]="i === 0" [attr.aria-labelledby]="'heading' + i" data-parent="#policyAccordion">
+                  <div class="card-body" [innerHtml]="policy.description"></div>
+                </div>
+
+                <ng-template #sub_policy>
+                  <div class="p-3 collapse" [attr.id]="'collapse' + i">
+                    <h6>Select Any of the below {{policy?.policy_name}}</h6>
+                    <div class="m-radio-list">
+                      <label class="m-radio" *ngFor="let policy_child of policy?.children">
+                        <input type="radio" name="sub_policy" [checked]="subPolicySelected" (click)="selectSubPolicy(policy_child, $event)">
+                        {{policy_child?.policy_name}}
+                        <span></span>
+                      </label>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </form>
+
+          </div>
+
+          <div class="clearfix float-right mt-3">
+            <button class="btn btn-accent mr-2" *ngIf="venueCreationSteps.step.start !== 1"
+                    (click)="changeFormSteps('back')">
+              <i class="la la-angle-left"></i> Back
+            </button>
+
+            <button class="btn btn-success" type="button"
+                    (click)="completeProcess()">
+              Complete Process<span>
+              <div class="createloader m-loader m-loader--brand" *ngIf="isPageLoading.creating">
+              </div>
+            </span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+<!-- Add user Bank Account modal -->
+<div class="modal animated fadeInBig" id="accountModal" tabindex="-1" role="dialog"
+     aria-labelledby="accountModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="accountModalCenterTitle">
+          Add Bank Account Details
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" (click)="closeModal('accountModal')"
+                aria-label="Close">
+          <span aria-hidden="true">x</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="m-form" [formGroup]="addBankForm">
+          <div class="form-group m-form__group">
+            <label for="account_no">Account Number</label>
+            <input type="text" (keypress)="isNum($event)" class="form-control m-input" id="account_no"
+                   placeholder="Account Number" minlength="10" maxlength="10" #account_no formControlName="account_no"/>
+            <div class="form-error"
+                 *ngIf="addBankForm.get('account_no')?.invalid && (addBankForm.get('account_no')?.touched || addBankForm.get('account_no')?.dirty)">
+              <small *ngIf="addBankForm.get('account_no')?.errors?.required">Account Number is required</small>
+              <small *ngIf="addBankForm.get('account_no')?.errors?.minlength">Account Number should be 10 digits</small>
+            </div>
+          </div>
+          <div class="form-group m-form__group ">
+            <label for="bank">Select Bank</label>
+            <ng-select [placeholder]="'Search Banks'" [autoCapitalize]="true" id="bank" formControlName="bank_id" (change)="findAccount($event, account_no, 'BANK')">
+              <ng-option *ngFor="let bank of allBanks$ | async" [value]="bank?.id">{{ bank?.bank_name }}</ng-option>
+              <span> <div class="m-loader m-loader--brand" style="top: -15px" *ngIf="xtraLoader"></div></span>
+            </ng-select>
+            <span> <div class="m-loader m-loader--brand" style="top: -15px" *ngIf="xtraLoader"></div></span>
+            <div class="form-error"
+                 *ngIf="addBankForm.get('bank_id')?.invalid && (addBankForm.get('bank_id')?.touched || addBankForm.get('bank_id')?.dirty)">
+              <small *ngIf="addBankForm.get('bank_id')?.errors?.required">Select a bank</small>
+            </div>
+          </div>
+          <div class="form-group m-form__group">
+            <label for="account_name">Account Name</label>
+            <input type="text" class="form-control m-input" id="account_name" placeholder="Account Name" required formControlName="account_name" disabled />
+            <div class="form-error" *ngIf="addBankForm.get('account_name')?.invalid && (addBankForm.get('account_name')?.touched || addBankForm.get('account_name')?.dirty)">
+              <small *ngIf="addBankForm.get('account_name')?.errors?.required">Account Name is required</small>
+              <small *ngIf="addBankForm.get('account_name')?.errors?.pattern">Account Name should not include
+                digits
+              </small>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="closeModal('accountModal')">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="addBankForm.invalid" (click)="createBankDetails()">
+          Add
+          <span>
+            <div class="m-loader m-loader--brand" style="top: -10px" *ngIf="!isPageLoading.create"></div>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Show Venue policies descriptions -->
+<div class="modal" id="venuePolicy" tabindex="-1" role="dialog" aria-labelledby="policyModalCenterTitle"
+     aria-hidden="true">
+  <div class="modal-dialog animated fadeInBig" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="policyModalCenterTitle" [innerHtml]="policyView.policy_name"></h5>
+        <button type="button" class="close" data-dismiss="modal" (click)="closeModal('venuePolicy')" aria-label="Close">
+          <span aria-hidden="true"><i class="flaticon-close"></i></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="policyDesc">
+          <div *ngIf="showVenuePolicyDesc">
+            <app-ngx-editor [editable]="false" [(ngModel)]="policyView.description" [placeholder]="'Descriptions'"
+                            [config]="editorConfig" [spellcheck]="true" name="description" [enableToolbar]="false">
+            </app-ngx-editor>
+          </div>
+          <div *ngIf="!showVenuePolicyDesc">
+            <app-ngx-editor [editable]="true" [(ngModel)]="newPolicyDescription" [config]="editorConfig" [placeholder]="'Descriptions'" [spellcheck]="true" name="description"
+                            [enableToolbar]="true">
+            </app-ngx-editor>
+            <div class="mt-1">
+              <button class="btn m-btn--air btn-accent m-btn--pill" [disabled]="newPolicyDescription === null" (click)="addVenuePolicy(policyView);closeModal('venuePolicy','hide')">
+                Add
+              </button>
+              <span class="text-center pr-2 pl-2">OR</span>
+              <button class="btn btn-danger m-btn--air m-btn--pill" (click)="closeVenuePolicyDesc()">
+                Click here to use default policy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="newPolicyDesc">
+          <small class="text-danger"><b>Note:</b></small>&nbsp;
+          <small>If Above policy isn't applicable to your venue click <a href="#" (click)="openNewPolicyDesc()">here</a>
+            to add your <b>{{policyView.policy_name}}</b>
+          </small>
+        </div>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="closeModal('venuePolicy')">
+          Close
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>

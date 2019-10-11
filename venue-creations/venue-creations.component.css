@@ -1,0 +1,86 @@
+.custom-control-label {
+  position: unset !important;
+}
+
+.custom-control-label::before,
+.custom-control-label::after {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+#accountModal {
+  background-color: rgba(32, 32, 33, 0.52);
+}
+
+button .createloader.m-loader.m-loader--brand {
+  top: -10px !important;
+}
+
+button .m-loader.m-loader--brand:before,
+button .createloader.m-loader.m-loader--brand:before {
+  border-top-color: #ececec !important;
+}
+
+.form-control {
+  border: 1px solid #ccc;
+}
+
+.stepsTitle {
+  margin-bottom: 10px;
+}
+
+.nav.nav-pills .nav-link {
+  margin-right: 15px;
+  border-bottom: 1px solid #cccccc;
+  color: #cccccc;
+}
+
+.nav.nav-pills .nav-link.active {
+  color: #212529;
+  font-weight: 600;
+  background-color: transparent;
+  border-bottom: 5px solid #5867dd !important;
+}
+
+#policyAccordion .card-header{
+  cursor: pointer;
+}
+
+.btn-gray {
+  background-color: #a0a0a0;
+  border-color: #a0a0a0;
+  color: #dddddd;
+  padding: 2px;
+}
+
+.policyTitle {
+  color: #444444;
+  /* text-align: center; */
+  font-size: 16px;
+}
+
+.more-info {
+  color: #5867dd;
+  cursor: pointer;
+}
+
+.policyDesc {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.policyDesc p {
+  font-family: 'Times New Roman';
+  line-height: 24px;
+  color: #000;
+  font-size: 15px;
+}
+
+
+/* ng-select add */
+#ae50055829fc {
+  background-color: #1ed2b9 !important;
+  color: #efefef;
+}
+
+@media only screen and (max-width: 768px) {}
