@@ -1,0 +1,150 @@
+.multiselect{
+  width: 100%;
+  position: relative;
+  .selectList {
+    position: relative;
+    &::before{
+      right: 4px;
+      top: 1px;
+      width: 23px;
+      height: 18px;
+      background: #fff;
+      position: absolute;
+      pointer-events: none;
+      display: block;
+    }
+    &::after{
+      top: 12px;
+      right: 15px;
+    }
+  }
+
+  .overSelect {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  #roles .custom-control{
+    position: relative;
+    padding: 5px 0 0 12px;
+    .m-checkbox{
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  #roles {
+    display: none;
+    background-color: #ffffff;
+    border: 1px #dadada solid;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 99;
+  }
+
+  #roles .custom-control:hover {
+    background-color: #3597ec;
+    label {
+      color: #ffffff;
+    }
+
+  }
+  .btn-display{
+    margin-right: 1rem;
+    display: inline-block;
+  }
+
+
+  .smaller{
+    padding: 1px 5px;
+  }
+}
+
+.move-cursor {
+  cursor: move;
+}
+
+.pointer-cursor {
+  cursor: pointer;
+}
+
+.role-pills {
+  vertical-align: sub;
+}
+
+.role-search {
+  //padding: 10px 10px 10px 5px;
+  width: 100%;
+  padding: .3em .3em .3em 25px;
+  margin: 0 .3em;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #757575;
+}
+
+.role-search:focus {
+  outline: none;
+  border-bottom-color: #00aec3;
+}
+
+.role-search-icon {
+  position: absolute;
+  top: calc(50% - 9px);
+  left: 9px;
+}
+
+.custom-scroll {
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 250px;
+  background-color: #faf5ff;
+  .selectedRole {
+    position: absolute;
+    width: 100%;
+    top: 20%;
+    i {
+      font-size: 30px;
+      color: #dddddd;
+    }
+    h3 {
+      color: #dddddd;
+      font-size: 38px;
+    }
+  }
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: .41em;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
+
+.drop-zone {
+  min-height: 250px;
+  z-index: 999;
+}
+
+.m-portlet__head-tools {
+  .close-button {
+    font-size: 3em;
+    cursor: pointer;
+  }
+}
+
+#droppable .cdk-drop-list-receiving {
+  border: 2px dashed #777777;
+  border-radius: 1em;
+}

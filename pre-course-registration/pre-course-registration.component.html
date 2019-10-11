@@ -1,0 +1,127 @@
+<div class="m-portlet m-portlet--mobile">
+  <div class="m-portlet__head">
+    <div class="m-portlet__head-caption">
+      <div class="m-portlet__head-title">
+        <h3 class="m-portlet__head-text">
+          Pre-Course Registration
+        </h3>
+      </div>
+    </div>
+    <div class="m-portlet__head-tools">
+      <ul class="m-portlet__nav">
+        <li class="m-portlet__nav-item">
+          <div class="col-md-12 col-sm-12 border-2">
+            <!--<div class="m&#45;&#45;padding-20">
+              <div class="row">
+                <div class="h3">...</div>
+              </div>
+              <div class="row">
+                <a class="float-left m-link m-link&#45;&#45;accent">
+                  <i class="flaticon-download"></i>&nbsp;&nbsp;
+                  Click here to download template &nbsp;&nbsp;
+                  <i *ngIf="loader.downloading" class="m-loader m-loader&#45;&#45;brand"></i>
+                </a>
+                <a id="debtor_list" target="_blank" download style="display: none"></a>
+              </div>
+              <div class="row mt-3">
+                <input class="form-control col-md-8 col-sm-12" type="file" id="fileId">
+                <button type="button" class="btn btn-sm btn-accent m-btn&#45;&#45;pill m-btn&#45;&#45;air pl-2"
+                        (click)="uploadDebtorsList('fileId')"
+                        [disabled]="loader.uploading">
+                  Upload
+                  <span *ngIf="loader.uploading">&nbsp;&nbsp;<i class="m-loader m-loader&#45;&#45;light"></i></span>
+                </button>
+              </div>
+            </div>-->
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="m-portlet__body">
+    <div class="table-responsive pt-5">
+      <div class="col-sm-12">
+        <div class="mb-5">
+          <form class="row" [formGroup]="filterForm">
+            <div class="col-3">
+              <label>Session</label>&nbsp;<i class="m-loader m-loader--brand" *ngIf="loader.session"></i>
+              <select class="form-control" formControlName="session_id" (change)="getSessionSemesters(session_id.value)"
+                      #session_id>
+                <option value=""></option>
+                <option *ngFor="let session of sessions" [value]="session?.id">{{ session?.name || session?.year }}
+                </option>
+              </select>
+            </div>
+            <div class="col-3">
+              <label>Semester</label>&nbsp;<i class="m-loader m-loader--brand" *ngIf="loader.semester"></i>
+              <select class="form-control" formControlName="semester">
+                <option value=""></option>
+                <option *ngFor="let semester of sessionSemesters" [value]="semester?.semester">{{ semester?.name }}</option>
+              </select>
+            </div>
+            <div class="col-3">
+              <label>Matric Number</label>
+              <input class="form-control" formControlName="matric_no">
+            </div>
+            <div class="col-3">
+              <button type="button"
+                      [disabled]="filterForm.invalid || loader.fetching"
+                      (click)="getPreRegisteredCourses()"
+                      class="btn btn-accent m-btn m-btn--pill m-btn--air float-right">
+                Submit
+                <span *ngIf="loader.fetching">
+              &nbsp;&nbsp; <i class="m-loader m-loader--light"></i>
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+      <table class="table table-striped table-bordered table-advance table-hover black-th">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Code</th>
+          <th>Type</th>
+          <th>Credit</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngIf="preRegisteredCourses.length">
+          <th colspan="6" class="text-center">Pending Courses to be approved</th>
+        </tr>
+        <tr *ngFor="let course of preRegisteredCourses; let i = index">
+          <td>{{i + 1}}</td>
+          <td>{{course?.curriculum_course?.title}}</td>
+          <td>{{course?.curriculum_course?.code}}</td>
+          <td>{{course?.curriculum_course?.typeName}}</td>
+          <td>{{course?.curriculum_course?.unit}}</td>
+          <td>
+            <input title="{{ course?.curriculum_course?.title }}" type="checkbox" (change)="checkBox($event, course?.curriculum_course)">
+          </td>
+        </tr>
+        <tr *ngIf="preRegisteredCourses.length > 0">
+          <td>&nbsp;</td>
+          <td>Total Units</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td class="align-middle">{{ total_units }}</td>
+          <td>&nbsp;
+            <button class="btn btn-accent m-btn--pill m-btn--air btn-sm" (click)="approveRegisteredCourses()"><!--[disabled]="courses?.registered_ids?.length === 0"-->
+              <!--*ngIf="courses?.registered_ids?.length > 0"-->
+              Approve Registration
+              <ng-container *ngIf="loader.approving">
+                &nbsp;&nbsp;
+                <i class="m-loader m-loader--light"></i>
+              </ng-container>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

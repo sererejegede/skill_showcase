@@ -1,0 +1,478 @@
+<div
+  class="m-grid__item m-grid__item--fluid  m-grid  m-container--responsive m-container--xxl m-page__container m-body">
+
+  <div class="m-subheader" appunwraptag="">
+    <div class="d-flex align-items-center">
+      <div class="mr-auto">
+        <h3 class="m-subheader__title m-subheader__title--separator">
+          <i class="fa fa-spin fa-cog"></i> Approval Configuration
+        </h3>
+        <ul class="m-subheader__breadcrumbs m-nav m-nav--inline">
+          <li class="m-nav__item m-nav__item--home">
+            <a routerLink="/dashboard" class="m-nav__link m-nav__link--icon">
+              <i class="m-nav__link-icon la la-home"></i>
+            </a>
+          </li>
+          <li class="m-nav__separator">
+            -
+          </li>
+          <li class="m-nav__item">
+            <a routerLink="/admin/configuration" (click)="switchDOM('LIST_SECTION')" class="m-nav__link">
+						<span class="m-nav__link-text">
+							Configuration
+						</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- END: Subheader -->
+
+  <div class="m-content">
+    <div class="row">
+      <div class="col-xl-12">
+
+        <!--create set up view-->
+        <section class="m-portlet m-portlet--mobile m-animate-fade-in-up" *ngIf="pageContainerRender.viewRender">
+          <div class="m-portlet__head">
+            <div class="m-portlet__head-caption">
+              <div class="m-portlet__head-title">
+                  <span class="m-portlet__head-icon">
+                    <i class="flaticon-settings"></i>
+                  </span>
+                <h3 class="m-portlet__head-text" [innerHtml]="state.sectionDOMChanger.title"></h3>
+              </div>
+            </div>
+            <div class="m-portlet__head-tools">
+              <!--<img class="img-fluid" [src]="state.institutionImg" alt="">-->
+              <a class="m-portlet__nav-link btn btn-lg btn-secondary  m-btn m-btn--icon m-btn--icon-only m-btn--pill  m-dropdown__toggle">
+                <i class="la la-times" (click)="switchDOM('LIST_SECTION')"></i>
+              </a>
+            </div>
+          </div>
+          <div class="m-portlet__body">
+            <div class="p-3 mx-4">
+              <!--creata form-->
+              <div class="form-wrapper" *ngIf="!state.sectionDOMChanger.isView">
+                <form #approvalForm="ngForm" class="m-form m-form--fit m-form--label-align-right m-form--group-seperator-dashed">
+
+                  <div class="form-group m-form__group row">
+                    <div class="col-md-6 form-group">
+                      <label for="item">Items <i class="text-danger">*</i></label>
+                      <div *ngIf="state.sectionDOMChanger.isCreateUpdate " class="selectList">
+                        <select class="form-control" id="item" name="item" [(ngModel)]="formData.selectedItem" required>
+                          <option value="" selected disabled>-- Select Item --</option>
+                          <option [value]="type?.id" *ngFor="let type of payload.entityTypes">{{type?.entityName}}
+                          </option>
+                        </select>
+                      </div>
+                      <input *ngIf="!state.sectionDOMChanger.isCreateUpdate " type="text" class="form-control"
+                             [value]="formData.selectedItem" readonly disabled>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                      <label for="action">Actions <i class="text-danger">*</i></label>
+                      <div class="selectList" *ngIf="state.sectionDOMChanger.isCreateUpdate ">
+                        <select class="form-control" id="action" name="action" [(ngModel)]="formData.selectedAction"
+                                required>
+                          <option value="" selected disabled>-- Select Action --</option>
+                          <option [value]="action" *ngFor="let action of payload.entityActions">{{action}}</option>
+                        </select>
+                      </div>
+                      <input type="text" *ngIf="!state.sectionDOMChanger.isCreateUpdate " class="form-control"
+                             [value]="formData.selectedAction" readonly disabled>
+                    </div>
+                    <!--Check if the transaction item chosen is transaction-->
+                    <ng-container *ngIf="approvalForm.value.item === '5' || formData.selectedItem === 'TRANSACTION'">
+                      <div class="col-md-6 form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount"
+                               class="form-control" name="configuredAmount"
+                               [(ngModel)]="formData.configuredAmount">
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <div class="mb-3"></div>
+                        <label class="m-checkbox mt-3">
+                          Check this box if the amount is the minimum amount
+                          <input type="checkbox" name="minAmount" [(ngModel)]="formData.minAmount"
+                                 (change)="approvalForm.value.minAmount = $event.target.checked">
+                          <span></span>
+                        </label>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                  <div class="form-group m-form__group row">
+                    <div class="col-sm-6 form-group mt-3">
+                      <h5 class="h5">All roles</h5>
+                      <div class="py-3 custom-scroll">
+                        <div class="position-relative mb-1">
+                          <i class="la la-search role-search-icon"></i>
+                          <input placeholder="Search role" class="role-search" (keyup)="filterRoles($event.target.value)">
+                        </div>
+                        <ul class="list-group"
+                            cdkDropList
+                            #roles="cdkDropList"
+                            [cdkDropListData]="allRoles"
+                            [cdkDropListConnectedTo]="[selected]"
+                            (cdkDropListDropped)="drop($event)">
+                          <li class="list-group-item list-group-item-action move-cursor"
+                              *ngFor="let role of allRoles; let i = index" cdkDrag>
+                            {{ i + 1 }}. &nbsp;{{ role?.name }}
+                          </li>
+                        </ul>
+                        <!--<span class="m-badge m-badge&#45;&#45;rounded m-badge&#45;&#45;accent mx-2 my-1 p-1 pointer-cursor"
+                              (click)="chooseRole(movie)"
+                              *ngFor="let movie of movies">
+                          <i class="la la-plus role-pills"></i>{{movie}}
+                        </span>-->
+                      </div>
+                      <!--<label for="roles">Roles <i class="text-danger">*</i></label>
+                      <div class="selectList">
+                        <select class="form-control" id="roles" name="role" [(ngModel)]="formData.role" required>
+                          <option selected disabled>&#45;&#45; Select Roles &#45;&#45;</option>
+                          <option [value]="role?.id" *ngFor="let role of state.roleEntity?.roles">{{role?.name}}</option>
+                        </select>
+                        <div class="overSelect"></div>
+                      </div>-->
+                      <!--<div class="multiselect">
+                        <div id="2" (clickOff)="closeDropList($event)" formDropList>
+                          <div class="selectList" (click)="showRoles()">
+                            <select class="form-control">
+                              <option>&#45;&#45; Select Roles &#45;&#45;</option>
+                            </select>
+                            <div class="overSelect"></div>
+                          </div>
+                          <div id="roles">
+                            <div class="custom-control checkbox-list" *ngFor="let role of state.roleEntity?.roles; let i = index;">
+                              <label class="m-checkbox m-checkbox&#45;&#45;square">
+                                <input type="checkbox" (click)="selectRole($event, role?.id, i)">
+                                {{role?.name}}
+                                <span></span>
+                                <div class="btn-display float-right">
+                                  <select name="" id="" [disabled]="!role?.selected" (change)="selectOrder($event, role?.id)">
+                                    <option value="">- order -</option>
+                                    <option value="1">First</option>
+                                    <option value="2">Second</option>
+                                    <option value="3">Third</option>
+                                  </select>
+                                </div>
+
+                              </label>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>-->
+                      <!--<select class="form-control" id="role">
+                        <option value=""></option>
+                      </select>-->
+                    </div>
+
+                    <div class="col-md-6 form-group mt-3">
+                      <h5 class="h5">Selected roles</h5>
+                      <div class="custom-scroll">
+
+                        <div class="selectedRole text-center">
+                          <i class="flaticon-squares"></i>
+                          <h3>Drag Role here</h3>
+                        </div>
+                        <ul class="list-group drop-zone"
+                            cdkDropList
+                            #selected="cdkDropList"
+                            [cdkDropListData]="selectedRoles"
+                            [cdkDropListConnectedTo]="[roles]"
+                            (cdkDropListDropped)="drop($event)">
+                          <li class="list-group-item list-group-item-action move-cursor"
+                              *ngFor="let role of selectedRoles; let i = index" cdkDrag>
+                            <span class="">{{i + 1}} - {{ role?.name }}</span>
+                            <!--<span class="float-right text-danger pointer-cursor"
+                                   tabindex="1" (click)="removeRole(role)">
+                               <i class="la la-close"></i>
+                             </span>-->
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="viewConfig" *ngIf="state.sectionDOMChanger.isView">
+                <div class="table-responsive">
+                  <table class="table table-condensed table-striped table-user-information">
+                    <tbody>
+                    <tr>
+                      <td>
+                        <table class="table">
+                          <tr>
+                            <td>
+                              <strong>
+                                <span class="flaticon-user text-primary"></span>
+                                UserType
+                              </strong>
+                            </td>
+                            <td class="text-primary">
+                              {{payload.details?.usertype }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>
+                                <span class="flaticon-user-settings text-primary"></span>
+                                Action Configured
+                              </strong>
+                            </td>
+                            <td class="text-primary">
+                              {{payload.details?.actionConfigured}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>
+                                <span class="flaticon-symbol text-primary"></span>
+                                Type
+                              </strong>
+                            </td>
+                            <td class="text-primary">
+                              {{payload.details?.entityType}}
+                            </td>
+                          </tr>
+                          <tr *ngIf="payload.details?.amountConfigured">
+                            <td>
+                              <strong>
+                                <span class="flaticon-coins text-primary"></span>
+                                Amount
+                              </strong>
+                            </td>
+                            <td class="text-primary">
+                              {{payload.details?.amountConfigured | currency: 'NGN'}}
+                              <span class="m-badge m-badge--warning px-2 ml-4" *ngIf="payload.details?.minAmount">
+                                MINIMUM
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>
+                                <span class="flaticon-map text-primary"></span>
+                                Roles to Authorize
+                              </strong>
+                            </td>
+                            <td class="text-primary">
+                              <table class="table table-bordered">
+                                <tr>
+                                  <th>Role</th>
+                                  <th>Order</th>
+                                  <!--<td>{{payload?.details?.authorizedRoles[0].roleId}}</td>-->
+                                </tr>
+                                <tr *ngFor="let role of payload?.details?.authorizedRoles">
+                                  <td>{{role?.roleName}}</td>
+                                  <td>{{role?.roleOrder}}</td>
+                                </tr>
+                                <!--<tr *ngFor="let role of payload?.details?.authorizedRoles">
+                                  <td>{{role?.roleOrder}}</td>
+                                </tr>-->
+                              </table>
+                            </td>
+                          </tr>
+
+                        </table>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                      <table class="table table-bordered">
+                        <tr>
+                          <span>Action By</span>
+                          <td>
+                            <strong><span class="la la-user text-primary"></span> Name</strong>
+                          </td>
+                          <td>
+                            <strong><span class="la la-envelope text-primary"></span> Email</strong>
+                          </td>
+                          <td>
+                            <strong><span class="la la-map-marker text-primary"></span> Institution</strong>
+                          </td>
+                          <td>
+                            <strong><span class="la la-check-square text-primary"></span> Action Performed</strong>
+                          </td>
+                          <td>
+                            <strong><span class="flaticon-time-3 text-primary"></span> Date Created</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>{{payload.details?.createdBy?.firstName +' '+ payload.details?.createdBy?.lastName ||
+                            ''}}
+                          </td>
+                          <td>{{payload.details?.createdBy?.email}}</td>
+                          <td>{{payload.details?.createdBy?.institutionName}}</td>
+                          <td>{{payload.details?.createdBy?.actionPerfomed}}</td>
+                          <td>{{payload.details?.createdBy?.createdAt}}</td>
+                        </tr>
+                      </table>
+                    </tr>
+
+                    <tr>
+                      <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                      <table>
+                        <tr>
+                          <td>
+                            <strong>
+                              <span class="flaticon-user-ok text-primary"></span>
+                              CreatedBy
+                            </strong>
+                          </td>
+                          <td class="text-primary">
+                            {{payload.details?.createdBy?.firstName}} {{payload.details?.createdBy?.lastName}}
+                          </td>
+                          <td>&nbsp;&nbsp;</td>
+                          <td>
+                            <strong>
+                              <span class="flaticon-time text-primary"></span>
+                              At
+                            </strong>
+                          </td>
+                          <td class="text-primary">
+                            {{payload.details?.createdBy?.createdAt}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>
+                              <span class="flaticon-user-ok text-primary"></span>
+                              ModifiedBy
+                            </strong>
+                          </td>
+                          <td class="text-primary">
+                            {{payload.details?.updatedBy?.firstName }}
+                          </td>
+                          <td>&nbsp;&nbsp;</td>
+                          <td>
+                            <strong>
+                              <span class="flaticon-time text-primary"></span>
+                              At
+                            </strong>
+                          </td>
+                          <td class="text-primary">
+                            {{payload.details?.updatedBy?.createdAt}}
+                          </td>
+                        </tr>
+                      </table>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="m-portlet__foot m-portlet__foot--fit">
+            <div class="m-form__actions p-4 portlet-bottom">
+              <div>
+                <!--create Button-->
+                <button *ngIf="state.sectionDOMChanger.isCreateUpdate && !state.sectionDOMChanger.isView"
+                        (click)="createSetup()" type="submit" class="btn btn-accent m-btn--pill"
+                        [disabled]="state.loading">
+                  Create <i class="la la-spinner la-2x k-loader k-loader--metal" *ngIf="state.loading"></i>
+                </button>
+
+                <!--update button-->
+                <button *ngIf="!state.sectionDOMChanger.isCreateUpdate && !state.sectionDOMChanger.isView" type="submit"
+                        (click)="updateConfiguration()" class="btn btn-accent m-btn--pill"
+                        [disabled]="state.loading">
+                  Update <i class="la la-spinner la-2x k-loader k-loader--metal" *ngIf="state.loading"></i>
+                </button>
+
+                <!--close button-->
+                <button type="button" class="ml-2 btn btn-danger m-btn--pill" (click)="switchDOM('LIST_SECTION')">
+                  <i class="la la-close"></i> Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!--list render section-->
+        <section class="m-portlet m-portlet--mobile m-animate-fade-in-up" *ngIf="pageContainerRender.listRender">
+          <div class="m-portlet__head">
+            <div class="m-portlet__head-caption pt-3">
+              <div class="m-portlet__head-title">
+                <a href="#" (click)="payload.list = []; getConfigurations(0)"><i class="flaticon-refresh"></i> Refresh
+                  page </a>&nbsp;
+              </div>
+            </div>
+            <div class="m-portlet__head-tools">
+              <ul class="m-portlet__nav">
+                <li class="m-portlet__nav-item">
+                  <button style="float: right;" (click)="switchDOM('CREATE_SECTION')" type="button"
+                          class="btn btn-accent m-btn m-btn--custom m-btn--icon m-btn--air">
+                    Create Configuration<i class="la la-plus"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="m-portlet__body">
+            <table class="table table-striped table-bordered">
+              <thead class="thead-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Item</th>
+                <th scope="col">Type</th>
+                <th scope="col">Created At</th>
+                <!--<th scope="col">Updated At</th>-->
+                <th scope="col">Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let config of payload.list | paginate : paginationConfig; let i = index">
+                <th scope="row">{{(paginationConfig.currentPage - 1) * 20 + i + 1}}</th>
+                <td>{{config?.entityType}}</td>
+                <td>{{config?.actionConfigured}}</td>
+                <td>{{config?.createdAt}}</td>
+                <!--<td>{{user?.updatedAt}}</td>-->
+                <td>
+                  <a (click)="viewConfiguration(config, i)" class="btn btn-outline-info" [tooltip]="'View details'">
+                    <i class="fa fa-info" *ngIf="!config?.view"></i>
+                    <i class="fa fa-spinner k-loader" *ngIf="config?.view"></i>
+                  </a>
+                  <a (click)="editConfiguration(config, i)" class="btn btn-outline-info" [tooltip]="'Edit details'">
+                    <i class="fa fa-edit" *ngIf="!config?.edit"></i>
+                    <i class="fa fa-spinner fa-spin k-loader" *ngIf="config?.edit"></i>
+                  </a>
+
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="5" class="text-center" *ngIf="state.fetchingList && payload.list.length === 0">
+                  <i class="la la-refresh k-loader k-loader--metal"></i> Loading Configuration(s)
+                </td>
+                <td colspan="5" class="text-center" *ngIf="!state.fetchingList && payload.list.length === 0">
+                  No record found
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <pagination-controls (pageChange)="getPage($event)"></pagination-controls>
+            <!--end: Datatable -->
+          </div>
+        </section>
+
+
+      </div>
+    </div>
+  </div>
+</div>
